@@ -621,6 +621,11 @@ AFRAME.registerComponent('hotspot-panel', {
       const topic = TOPICS[topicId];
       if (!saved || !topic) return;
 
+      logEvent('quiz_answer_open', {
+        topic_id: topicId,
+        scene_id: `${topicId}_quiz_answer`
+      });
+
       toggleHubProgress(false);
       hideAllHotspotGroups();
       closeInfoPanel();
