@@ -628,17 +628,27 @@ AFRAME.registerComponent('hotspot-panel', {
       parkForRaycast('#pageQuiz', false);
       setVisible('#pageQuiz', true);
       setHudVisible(false);
-      setText('#quizQuestion', `作答完成\n共答對 ${saved.score}/${saved.total} 題`);
-      setText('#quizResult', topic.quiz.questions.map((q, i) => `第 ${i+1} 題正確答案：${q.options[q.answer]}`).join('\n'));
-      setVisible('#quizResult', true);
+
+      setText('#quizQuestion', '');
+      setVisible('#quizQuestion', false);
+      setText('#quizResult', '');
+      setVisible('#quizResult', false);
+
       for (let i=1;i<=3;i++){
         const btn = qs(`#quizOptBtn${i}`);
         const label = qs(`#quizOptText${i}`);
         if (btn) btn.setAttribute('visible', false);
         if (label) label.setAttribute('visible', false);
       }
+
+      showQuizAnswerImage(topicId);
+
       const nextBtn = qs('#quizNextBtn');
-      if (nextBtn) nextBtn.setAttribute('src', '#btnimg-back');
+      if (nextBtn) {
+        nextBtn.setAttribute('visible', true);
+        nextBtn.setAttribute('src', '#btnimg-back');
+      }
+
       state.quizRuntime = { topicId, idx: 0, chosen: saved.answers ? saved.answers.slice() : [], startedAt: saved.ts || nowTs(), submitted: true };
       saveState();
     }
@@ -650,6 +660,7 @@ AFRAME.registerComponent('hotspot-panel', {
       const qObj = topic.quiz.questions[rt.idx];
       if (!qObj) return;
 
+      setVisible('#quizQuestion', true);
       setText('#quizQuestion', `第 ${rt.idx+1} 題／${topic.quiz.questions.length} 題
 ${qObj.q}`);
       setText('#quizResult', '');
@@ -754,17 +765,27 @@ ${qObj.q}`);
           duration_in_scene: Number((((nowTs() - (rt.startedAt || nowTs())) / 1000)).toFixed(1))
         });
       });
-      setText('#quizQuestion', `作答完成\n共答對 ${saved.score}/${saved.total} 題`);
-      setText('#quizResult', topic.quiz.questions.map((q, i) => `第 ${i+1} 題正確答案：${q.options[q.answer]}`).join('\n'));
-      setVisible('#quizResult', true);
+
+      setText('#quizQuestion', '');
+      setVisible('#quizQuestion', false);
+      setText('#quizResult', '');
+      setVisible('#quizResult', false);
+
       for (let i=1;i<=3;i++){
         const btn = qs(`#quizOptBtn${i}`);
         const label = qs(`#quizOptText${i}`);
         if (btn) btn.setAttribute('visible', false);
         if (label) label.setAttribute('visible', false);
       }
+
+      showQuizAnswerImage(rt.topicId);
+
       const nextBtn = qs('#quizNextBtn');
-      if (nextBtn) nextBtn.setAttribute('src', '#btnimg-back');
+      if (nextBtn) {
+        nextBtn.setAttribute('visible', true);
+        nextBtn.setAttribute('src', '#btnimg-back');
+      }
+
       rt.submitted = true;
       state.quizRuntime = rt;
       saveState();
@@ -1042,7 +1063,7 @@ ${qObj.q}`);
       <a-image data-ui="true" class="clickable" id="btnStartQuiz"
                ui-action="action: startQuiz; a: t1"
                src="#btnimg-text" width="0.80" height="0.30"
-               position="0 -1.36 0.05"></a-image>
+               position="0 -1.24 0.05"></a-image>
 
       <a-entity id="hubQuizResultPanel" visible="false" position="0 -2.25 0">
         <a-plane width="2.2" height="0.92" material="shader: flat; color:#111; opacity:0.92"></a-plane>
@@ -1174,34 +1195,34 @@ ${qObj.q}`);
     </a-entity>
 
     <!-- Page: Quiz -->
-    <a-entity id="pageQuiz" visible="false" position="0 2.22 -2.0">
+    <a-entity id="pageQuiz" visible="false" position="0 1.86 -2.0">
       <a-plane width="4.05" height="2.55" position="0 -0.62 0" material="shader: flat; color: #111; opacity: 0.90"></a-plane>
 
-      <a-entity id="quizQuestion" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.115; maxWidth:3.2; lineHeight:1.22"
+      <a-entity id="quizQuestion" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.128; maxWidth:3.28; lineHeight:1.22"
                 position="0 -0.10 0.03"></a-entity>
 
       <a-box data-ui="true" class="clickable" id="quizOptBtn1" ui-action="action: chooseOpt; a: 0"
-             position="-1.22 -0.92 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
-      <a-entity id="quizOptText1" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.074; maxWidth:0.84; lineHeight:1.15"
-                position="-1.22 -0.92 0.08"></a-entity>
+             position="-1.22 -0.90 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
+      <a-entity id="quizOptText1" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.085; maxWidth:0.86; lineHeight:1.15"
+                position="-1.22 -0.90 0.08"></a-entity>
 
       <a-box data-ui="true" class="clickable" id="quizOptBtn2" ui-action="action: chooseOpt; a: 1"
-             position="0 -0.92 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
-      <a-entity id="quizOptText2" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.074; maxWidth:0.84; lineHeight:1.15"
-                position="0 -0.92 0.08"></a-entity>
+             position="0 -0.90 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
+      <a-entity id="quizOptText2" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.085; maxWidth:0.86; lineHeight:1.15"
+                position="0 -0.90 0.08"></a-entity>
 
       <a-box data-ui="true" class="clickable" id="quizOptBtn3" ui-action="action: chooseOpt; a: 2"
-             position="1.22 -0.92 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
-      <a-entity id="quizOptText3" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.074; maxWidth:0.84; lineHeight:1.15"
-                position="1.22 -0.92 0.08"></a-entity>
+             position="1.22 -0.90 0.02" scale="0.94 0.34 0.1" color="#333"></a-box>
+      <a-entity id="quizOptText3" troika-text="value: ; align: center; color:#fff; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.085; maxWidth:0.86; lineHeight:1.15"
+                position="1.22 -0.90 0.08"></a-entity>
 
-      <a-image id="quizAnswerImage" visible="false" src="#btnimg-ans1" width="2.70" height="1.62" position="0 -0.64 0.05"></a-image>
+      <a-image id="quizAnswerImage" visible="false" src="#btnimg-ans1" width="2.70" height="1.62" position="0 -0.60 0.05"></a-image>
 
       <a-entity id="quizResult" troika-text="value: ; align: center; color:#ffe9a8; font:https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf; fontSize:0.084; maxWidth:2.7; lineHeight:1.25"
-                visible="false" position="0 -0.62 0.03"></a-entity>
+                visible="false" position="0 -0.72 0.03"></a-entity>
 
       <a-image data-ui="true" class="clickable" id="quizNextBtn" ui-action="action: nextQuiz"
-               src="#btnimg-next" width="0.80" height="0.30" position="0 -1.42 0.06"></a-image>
+               src="#btnimg-next" width="0.80" height="0.30" position="0 -1.66 0.06"></a-image>
     </a-entity>
 
     <!-- 大型閱讀面板 -->
